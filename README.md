@@ -14,13 +14,11 @@ den Button verbinden und über die Konsole die folgende Funktion in das Ram des 
 
 setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});
 
-Eigentlich sollte das auch direkt über das script von der webseite aus möglich sein - hat hier aber leider nicht geklappt...
-
-...
-const command = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});\n";
-await txCharacteristic.writeValueWithoutResponse(new TextEncoder().encode(command));
-....
-
+Eigentlich sollte das auch direkt über das script von der webseite aus möglich sein - hat hier aber leider nicht geklappt...<p>
+...<p>
+const command = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});\n";<p>
+await txCharacteristic.writeValueWithoutResponse(new TextEncoder().encode(command));<p>
+....<p>
 Die Seite soll verschiedene Sektionen haben:<p>
 - Setup für den Puck.js Button.
 - Auswahl eines vorbereiteten Prompts, der der eigentlichen Anfrage voran gestellt wird um spezifischere Antworten geben zu können (z.B. sehr knappe Antwort, oder Lustige Funfacts zum Thema etc...
@@ -30,3 +28,10 @@ Die Seite soll als Progressive WebApp fungieren und auf dem Endgerät installier
 
 
 Scheint ein gutes Startprojekt zu sein, um in WebBluetooth, JS, html, css und Github mal Erfahrungen sammeln zu können. 
+
+Interessante Webseiten für diese Themen:<p>
+https://www.espruino.com/Web%20Bluetooth<p>
+https://webbluetoothcg.github.io/web-bluetooth/<p>
+https://www.bluetooth.com/specifications/assigned-numbers/<p>
+https://pictogrammers.com/library/mdi/<p>
+https://web.dev/learn?hl=de
