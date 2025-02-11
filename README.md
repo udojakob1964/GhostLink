@@ -15,12 +15,13 @@ den Button verbinden und über die Konsole die folgende Funktion in das Ram des 
 setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});
 
 Eigentlich sollte das auch direkt über das script von der webseite aus möglich sein - hat hier aber leider nicht geklappt...
+
 ...
 const command = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});\n";
 await txCharacteristic.writeValueWithoutResponse(new TextEncoder().encode(command));
 ....
 
-Die Seite soll verschiedene Sektionen haben:
+Die Seite soll verschiedene Sektionen haben:<p>
 - Setup für den Puck.js Button.
 - Auswahl eines vorbereiteten Prompts, der der eigentlichen Anfrage voran gestellt wird um spezifischere Antworten geben zu können (z.B. sehr knappe Antwort, oder Lustige Funfacts zum Thema etc...
 - Testbereich mit symbolisiertem Puck.js um auch ohne Puck das Progamm bedienen zu können.
