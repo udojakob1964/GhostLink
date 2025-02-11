@@ -11,6 +11,7 @@ Um dem Button die entsprechende Funktionalität zu geben, muss man über die Sei
 [https://www.puck-js.com/puck.js](https://www.espruino.com/ide/#)
 
 den Button verbinden und über die Konsole die folgende Funktion in das Ram des Buttons schreiben:
+
 setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});
 
 Eigentlich sollte das auch direkt über das script von der webseite aus möglich sein - hat hier aber leider nicht geklappt...
