@@ -1,7 +1,7 @@
 async function connectPuckJS() {
     try {
         console.log("🔍 Suche nach Puck.js...");
-        document.getElementById("status").innerText = "🟡 Suche nach Puck.js...";
+        document.getElementById("status").innerText = "🟡 Searching for Remote Control ...";
 
         // 1️⃣ Bluetooth-Gerät suchen
         const device = await navigator.bluetooth.requestDevice({
