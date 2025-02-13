@@ -21,7 +21,7 @@ await txCharacteristic.writeValueWithoutResponse(new TextEncoder().encode(comman
 ....<p>
 Die Seite soll verschiedene Sektionen haben:<p>
 - Setup für den Puck.js Button.
-- Auswahl eines vorbereiteten Prompts, der der eigentlichen Anfrage voran gestellt wird um spezifischere Antworten geben zu können (z.B. sehr knappe Antwort, oder Lustige Funfacts zum Thema etc...
+- Auswahl eines vorbereiteten Prompts, der der eigentlichen Anfrage voran gestellt wird um spezifischere Antworten geben zu können (z.B. sehr knappe Antwort, oder Lustige Funfacts zum Thema etc...)
 - Testbereich mit symbolisiertem Puck.js um auch ohne Puck das Progamm bedienen zu können.
 
 Die Seite soll als Progressive WebApp fungieren und auf dem Endgerät installierbar sein (um nicht als Webbrowser erkennbar zu sein)
@@ -35,3 +35,15 @@ https://webbluetoothcg.github.io/web-bluetooth/<p>
 https://www.bluetooth.com/specifications/assigned-numbers/<p>
 https://pictogrammers.com/library/mdi/<p>
 https://web.dev/learn?hl=de
+
+
+
+
+Vorbereitungen:
+
+Git installieren
+GitHub Repository anlegen
+VisualStudio Code installieren
+- Liver Server  Extension installieren
+- Bootstrap Intellisense installieren (Bootstrap IntelliSense  v2.0.2 )
+  - entsprechende Bootstrap Version wählen - hier 5.3
