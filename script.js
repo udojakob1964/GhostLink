@@ -35,8 +35,28 @@ async function connectPuckJS() {
                 console.log("⬇️ Button wurde gedrückt!");
                 document.getElementById("status").innerText = "🟠 Button pressed!";
                 //beep(300,100);
-                navigator.vibrate(100);
+                //navigator.vibrate(100);
                 new Audio("Button-down.mp3").play();
+
+
+                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.lang = 'de-DE';
+                recognition.start();
+
+                recognition.onresult = async (event) => {
+                    const userSpeech = event.results[0][0].transcript;
+                    console.log(`Gesprochener Text: ${userSpeech}`);
+                    document.getElementById('status').textContent = `Gesprochener Text: ${userSpeech}`;
+
+                    // Anfrage an ChatGPT senden
+                    // const chatGPTResponse = await sendChatGPTRequest(userSpeech);
+                    const chatGPTResponse = "Bald wird das hier funktionieren!";
+                    speak(chatGPTResponse);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Spracherkennung Fehler:', event.error);
+                };
 
             } 
             
@@ -44,8 +64,8 @@ async function connectPuckJS() {
                 console.log("⬆️ Button wurde losgelassen!");
                 document.getElementById("status").innerText = "🟢 Connected, Button released!";
                 //beep(1000,100);
-                navigator.vibrate(200);
-                new Audio("Button-up.mp3").play();
+                //navigator.vibrate(200);
+                //new Audio("Button-up.mp3").play();
             }
             
             if (value.includes("E.getBattery()")) {
@@ -61,14 +81,14 @@ async function connectPuckJS() {
         // 7️⃣ TX-Charakteristik (Daten senden) abrufen
         const txCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
 
-// 7️⃣ Befehl an Puck.js senden, um den Batteriestand zu bekommen
-const command = "E.getBattery()\n"; // Befehl für Espruino
-await txCharacteristic.writeValue(new TextEncoder().encode(command));
+        // 7️⃣ Befehl an Puck.js senden, um den Batteriestand zu bekommen
+        const command = "E.getBattery()\n"; // Befehl für Espruino
+        await txCharacteristic.writeValue(new TextEncoder().encode(command));
 
-//const command2 = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true})\n";
-//await txCharacteristic.writeValue(new TextEncoder().encode(command2));
+        //const command2 = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true})\n";
+        //await txCharacteristic.writeValue(new TextEncoder().encode(command2));
 
-console.log("📤 Befehl gesendet: Batteriestand abfragen...");
+        console.log("📤 Befehl gesendet: Batteriestand abfragen...");
 
         // 8️⃣ Korrigierter Befehl für Puck.js
         // const command = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});\n";
@@ -129,11 +149,17 @@ function updateBatteryDisplay(level) {
     batteryBar.innerText = `${level} % 🔋 Battery`;
 
     // Farbe je nach Ladestand anpassen
-    if (level > 50) {
+    if (level > 75) {
         batteryBar.className = "progress-bar bg-success"; // Grün
     } else if (level > 20) {
         batteryBar.className = "progress-bar bg-warning"; // Gelb
     } else {
         batteryBar.className = "progress-bar bg-danger"; // Rot
     }
+}
+
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'de-DE';
+    speechSynthesis.speak(utterance);
 }
