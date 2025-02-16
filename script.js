@@ -34,13 +34,18 @@ async function connectPuckJS() {
             if (value.includes("BTN_DOWN")) {
                 console.log("⬇️ Button wurde gedrückt!");
                 document.getElementById("status").innerText = "🟠 Button pressed!";
-                beep(300,100);
+                //beep(300,100);
+                navigator.vibrate(100);
+                new Audio("Button-down.mp3").play();
+
             } 
             
             if (value.includes("BTN_UP")) {
                 console.log("⬆️ Button wurde losgelassen!");
                 document.getElementById("status").innerText = "🟢 Connected, Button released!";
-                beep(1000,100);
+                //beep(1000,100);
+                navigator.vibrate(200);
+                new Audio("Button-up.mp3").play();
             }
             
             if (value.includes("E.getBattery()")) {
@@ -49,6 +54,7 @@ async function connectPuckJS() {
                 let batteryLevel = value.substr(17,2);
                 console.log(`🔋 Batteriestand erhalten: ${batteryLevel}%`);
                 updateBatteryDisplay(parseInt(batteryLevel));
+                new Audio("Battery-level.mp3").play();
             }
         });
 
