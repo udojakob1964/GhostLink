@@ -35,15 +35,34 @@ async function connectPuckJS() {
                 console.log("⬇️ Button wurde gedrückt!");
                 document.getElementById("status").innerText = "🟠 Button pressed!";
                 beep(300,100);
-            } else if (value.includes("BTN_UP")) {
+            } 
+            
+            if (value.includes("BTN_UP")) {
                 console.log("⬆️ Button wurde losgelassen!");
                 document.getElementById("status").innerText = "🟢 Connected, Button released!";
                 beep(1000,100);
+            }
+            
+            if (value.includes("E.getBattery()")) {
+                console.log("Answer for Battery Level received!");
+                //let batteryLevel = parseInt(value.substring(18,2));
+                let batteryLevel = value.substr(17,2);
+                console.log(`🔋 Batteriestand erhalten: ${batteryLevel}%`);
+                updateBatteryDisplay(parseInt(batteryLevel));
             }
         });
 
         // 7️⃣ TX-Charakteristik (Daten senden) abrufen
         const txCharacteristic = await service.getCharacteristic('6e400002-b5a3-f393-e0a9-e50e24dcca9e');
+
+// 7️⃣ Befehl an Puck.js senden, um den Batteriestand zu bekommen
+const command = "E.getBattery()\n"; // Befehl für Espruino
+await txCharacteristic.writeValue(new TextEncoder().encode(command));
+
+//const command2 = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true})\n";
+//await txCharacteristic.writeValue(new TextEncoder().encode(command2));
+
+console.log("📤 Befehl gesendet: Batteriestand abfragen...");
 
         // 8️⃣ Korrigierter Befehl für Puck.js
         // const command = "setWatch(function(e) {Bluetooth.println(e.state ? 'BTN_DOWN' : 'BTN_UP');}, BTN, {edge:'both', debounce:50, repeat:true});\n";
@@ -61,11 +80,12 @@ async function connectPuckJS() {
 
         // Alles hat geklappt => Haken setzen an ScanButton:
         //document.getElementById("connectBluetoothDevice").innerHTML += ' <i class="bi bi-check2-circle"></i>';
-        document.getElementById("connectBluetoothDevice").style.backgroundColor= "lightgreen";
+        //document.getElementById("connectBluetoothDevice").style.backgroundColor= "lightgreen";
 
     } catch (error) {
         console.error("❌ Fehler:", error);
-        document.getElementById("connectBluetoothDevice").innerText = "❌ Error during connection!"; 
+        //document.getElementById("connectBluetoothDevice").innerText = "❌ Error during connection!"; 
+        document.getElementById("status").innerText = "❌ Error during connection! Please choose the PUCK.js!";
     }
 }
 
@@ -89,4 +109,25 @@ function beep(frequency = 440, duration = 500) {
         oscillator.stop();
         audioContext.close();
     }, duration);
+}
+
+function updateBatteryDisplay(level) {
+    let batteryBar = document.getElementById("batteryBar");
+
+    // Begrenzung zwischen 0% und 100%
+    level = Math.max(0, Math.min(100, level));
+
+    // Fortschrittsbalken aktualisieren
+    batteryBar.style.width = `${level}%`;
+    batteryBar.setAttribute("aria-valuenow", level);
+    batteryBar.innerText = `${level} % 🔋 Battery`;
+
+    // Farbe je nach Ladestand anpassen
+    if (level > 50) {
+        batteryBar.className = "progress-bar bg-success"; // Grün
+    } else if (level > 20) {
+        batteryBar.className = "progress-bar bg-warning"; // Gelb
+    } else {
+        batteryBar.className = "progress-bar bg-danger"; // Rot
+    }
 }
