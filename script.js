@@ -34,9 +34,9 @@ async function connectPuckJS() {
             let value = new TextDecoder().decode(event.target.value);
             console.log(`🔹 Empfangene Daten: ${value}`);
 
-            if (value.includes("BTN_DOWN")) {
+            if (value.includes("BTN_UP")) {
                 console.log("⬇️ Button wurde gedrückt!");
-                document.getElementById("status").innerText = "🟠 Button pressed!";
+                document.getElementById("status").innerText = "🟢 Button released!";
                 //beep(300,100);
                 //navigator.vibrate(100);
                 new Audio("Button-down.mp3").play();
@@ -48,11 +48,12 @@ async function connectPuckJS() {
                 recognition.onresult = async (event) => {
                     const userSpeech = event.results[0][0].transcript;
                     console.log(`Gesprochener Text: ${userSpeech}`);
-                    document.getElementById('status').textContent = `Gesprochener Text: ${userSpeech}`;
+                    document.getElementById('status').textContent = `SpeechToText: ${userSpeech}`;
 
                     // Anfrage an ChatGPT senden
-                    // const chatGPTResponse = await sendChatGPTRequest(userSpeech);
-                    const chatGPTResponse = "Bald wird das hier funktionieren!";
+                    const chatGPTResponse = await sendChatGPTRequest(userSpeech);
+                    //const chatGPTResponse = "Bald wird das hier funktionieren!";
+                    document.getElementById('status').textContent = `TextToSpeech: ${chatGPTResponse}`;
                     speak(chatGPTResponse);
                 };
 
@@ -62,9 +63,9 @@ async function connectPuckJS() {
 
             } 
             
-            if (value.includes("BTN_UP")) {
-                console.log("⬆️ Button wurde losgelassen!");
-                document.getElementById("status").innerText = "🟢 Connected, Button released!";
+            if (value.includes("BTN_DOWN")) {
+                console.log("⬆️ Button wurde gedrückt!");
+                document.getElementById("status").innerText = "🟠 Connected, Button pressed!";
                 //beep(1000,100);
                 //navigator.vibrate(200);
                 //new Audio("Button-up.mp3").play();
@@ -151,7 +152,7 @@ function updateBatteryDisplay(level) {
     batteryBar.innerText = `${level} % 🔋 Battery`;
 
     // Farbe je nach Ladestand anpassen
-    if (level > 75) {
+    if (level > 65) {
         batteryBar.className = "progress-bar bg-success"; // Grün
     } else if (level > 20) {
         batteryBar.className = "progress-bar bg-warning"; // Gelb
@@ -167,11 +168,12 @@ function speak(text) {
 }
 
 async function sendChatGPTRequest(userMessage) {
-    const apiKey = 'DEIN_OPENAI_API_SCHLÜSSEL';  // Niemals direkt im Frontend speichern!
+    const apiKey = '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';  // Niemals direkt im Frontend speichern!
     const url = 'https://api.openai.com/v1/chat/completions';
 
     const requestBody = {
         model: "gpt-3.5-turbo",
+        //model: "gpt-4o-mini",
         messages: [{ role: "user", content: userMessage }],
         max_tokens: 100
     };
