@@ -26,6 +26,9 @@ async function connectPuckJS() {
         await characteristic.startNotifications();
         console.log("📡 Benachrichtigungen aktiviert!");
 
+        // Gerät wach halten (oder aufwecken??)
+        await requestWakeLock();
+
         // 6️⃣ Event-Listener für Button-Events hinzufügen
         characteristic.addEventListener('characteristicvaluechanged', (event) => {
             let value = new TextDecoder().decode(event.target.value);
@@ -37,7 +40,6 @@ async function connectPuckJS() {
                 //beep(300,100);
                 //navigator.vibrate(100);
                 new Audio("Button-down.mp3").play();
-
 
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
@@ -162,4 +164,56 @@ function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
     speechSynthesis.speak(utterance);
+}
+
+async function sendChatGPTRequest(userMessage) {
+    const apiKey = 'DEIN_OPENAI_API_SCHLÜSSEL';  // Niemals direkt im Frontend speichern!
+    const url = 'https://api.openai.com/v1/chat/completions';
+
+    const requestBody = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: userMessage }],
+        max_tokens: 100
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        console.log("ChatGPT Antwort:", responseData.choices[0].message.content);
+        return responseData.choices[0].message.content;
+    } catch (error) {
+        console.error('Fehler beim Abrufen der ChatGPT-Antwort:', error);
+    }
+}
+
+
+let wakeLock = null;
+
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock aktiviert');
+
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock deaktiviert');
+            });
+        } catch (err) {
+            console.error(`Wake Lock Fehler: ${err.name}, ${err.message}`);
+        }
+    } else {
+        console.warn('Wake Lock API wird nicht unterstützt');
+    }
 }
