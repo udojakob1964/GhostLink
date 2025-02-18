@@ -121,7 +121,7 @@ async function connectPuckJS() {
 
 // 🔘 Verbindung mit Button starten
 document.querySelector("#connectBluetoothDevice").addEventListener("click", connectPuckJS);
-
+document.querySelector("#setApiKey").addEventListener("click", setApiKey);
 
 function beep(frequency = 440, duration = 500) {
     let audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -164,16 +164,22 @@ function updateBatteryDisplay(level) {
 function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
+    utterance.rate = 2.0;
     speechSynthesis.speak(utterance);
 }
 
-async function sendChatGPTRequest(userMessage) {
-    const apiKey = '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';  // Niemals direkt im Frontend speichern!
+async function sendChatGPTRequest(userMessage) {    
+    const apiKey = localStorage.getItem('openai_api_key'); 
+    if (!apiKey) {
+        alert('Bitte OpenAI API-Schlüssel eingeben!');
+        return;
+    }
+
     const url = 'https://api.openai.com/v1/chat/completions';
 
     const requestBody = {
-        model: "gpt-3.5-turbo",
-        //model: "gpt-4o-mini",
+        //model: "gpt-3.5-turbo",
+        model: "gpt-4o-mini",
         messages: [{ role: "user", content: userMessage }],
         max_tokens: 100
     };
@@ -183,7 +189,9 @@ async function sendChatGPTRequest(userMessage) {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+                'Referer': 'https://www.google.com/'  // Fake-Referer
             },
             body: JSON.stringify(requestBody)
         });
@@ -217,5 +225,13 @@ async function requestWakeLock() {
         }
     } else {
         console.warn('Wake Lock API wird nicht unterstützt');
+    }
+}
+
+function setApiKey() {
+    const key = prompt("Please enter API-Key:", localStorage.getItem('openai_api_key'));
+    if (key) {
+        localStorage.setItem('openai_api_key', key);
+        alert('API-Schlüssel gespeichert!');
     }
 }
