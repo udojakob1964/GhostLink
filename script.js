@@ -39,11 +39,12 @@ async function connectPuckJS() {
                 document.getElementById("status").innerText = "🟢 Button released!";
                 //beep(300,100);
                 //navigator.vibrate(100);
-                new Audio("Button-down.mp3").play();
+                //new Audio("Button-down.mp3").play(); 
 
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
                 recognition.start();
+                new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
 
                 recognition.onresult = async (event) => {
                     const userSpeech = event.results[0][0].transcript;
@@ -64,6 +65,7 @@ async function connectPuckJS() {
             } 
             
             if (value.includes("BTN_DOWN")) {
+                speechSynthesis.cancel();   // stop speaking
                 console.log("⬆️ Button wurde gedrückt!");
                 document.getElementById("status").innerText = "🟠 Connected, Button pressed!";
                 //beep(1000,100);
