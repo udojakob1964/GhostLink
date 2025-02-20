@@ -304,7 +304,7 @@ async function selectMicrophone() {
 
         // Beispiel: Wähle das erste verfügbare Mikrofon
         //const selectedDeviceId = audioInputDevices[0].deviceId;
-        const selectedDeviceId = audioInputDevices[audioInputDevices.length-1].deviceId; //take the last one
+        const selectedDeviceId = audioInputDevices[3].deviceId; 
 
         // Optional: Benutzer zur Auswahl eines Mikrofons auffordern
         //const selectedDeviceId = prompt("Bitte wählen Sie ein Mikrofon:", audioInputDevices.map(device => device.label).join('\n'));
