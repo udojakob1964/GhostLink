@@ -1,5 +1,6 @@
 async function connectPuckJS() {
     try {
+        //redirectConsoleToTextarea(document.getElementById("textareaId"));
         console.log("🔍 Suche nach Puck.js...");
         document.getElementById("status").innerText = "🟡 Searching for Remote Control ...";
 
@@ -35,7 +36,7 @@ async function connectPuckJS() {
             console.log(`🔹 Empfangene Daten: ${value}`);
 
             if (value.includes("BTN_UP")) {
-                console.log("⬇️ Button wurde gedrückt!");
+                console.log("⬆️ Button up recognized!");
                 document.getElementById("status").innerText = "🟢 Button released!";
                 //beep(300,100);
                 //navigator.vibrate(100);
@@ -44,8 +45,8 @@ async function connectPuckJS() {
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
                 recognition.start();
-                new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
-
+                //new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
+                // seems no to be necessary because on android the microphone is activated by the browser and beeps...
                 recognition.onresult = async (event) => {
                     const userSpeech = event.results[0][0].transcript;
                     console.log(`Gesprochener Text: ${userSpeech}`);
@@ -66,7 +67,7 @@ async function connectPuckJS() {
             
             if (value.includes("BTN_DOWN")) {
                 speechSynthesis.cancel();   // stop speaking
-                console.log("⬆️ Button wurde gedrückt!");
+                console.log("⬇️ Button down recognized!");
                 document.getElementById("status").innerText = "🟠 Connected, Button pressed!";
                 //beep(1000,100);
                 //navigator.vibrate(200);
@@ -113,6 +114,14 @@ async function connectPuckJS() {
         //document.getElementById("connectBluetoothDevice").innerHTML += ' <i class="bi bi-check2-circle"></i>';
         //document.getElementById("connectBluetoothDevice").style.backgroundColor= "lightgreen";
 
+        navigator.mediaDevices.enumerateDevices().then(devices => {
+            devices.forEach(device => {
+                if (device.kind === 'audioinput') {
+                    console.log(`Eingabegerät gefunden: ${device.label} (${device.deviceId})`);
+                }
+            });
+        }).catch(error => console.error('Fehler beim Abrufen der Audiogeräte:', error));
+
     } catch (error) {
         console.error("❌ Fehler:", error);
         //document.getElementById("connectBluetoothDevice").innerText = "❌ Error during connection!"; 
@@ -124,6 +133,9 @@ async function connectPuckJS() {
 // 🔘 Verbindung mit Button starten
 document.querySelector("#connectBluetoothDevice").addEventListener("click", connectPuckJS);
 document.querySelector("#setApiKey").addEventListener("click", setApiKey);
+document.addEventListener("DOMContentLoaded", function() {
+    redirectConsoleToTextarea("textareaId");
+});
 
 function beep(frequency = 440, duration = 500) {
     let audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -166,7 +178,7 @@ function updateBatteryDisplay(level) {
 function speak(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'de-DE';
-    utterance.rate = 2.0;
+    utterance.rate = 1.5;
     speechSynthesis.speak(utterance);
 }
 
@@ -236,4 +248,38 @@ function setApiKey() {
         localStorage.setItem('openai_api_key', key);
         alert('API-Schlüssel gespeichert!');
     }
+}
+
+
+function redirectConsoleToTextarea(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    if (!textarea) {
+        console.error(`Textarea with id "${textareaId}" not found.`);
+        return;
+    }
+    
+    function writeToTextarea(message) {
+        //textarea.value += message + "\n";
+        //textarea.scrollTop = textarea.scrollHeight; // Scroll to bottom
+        textarea.value = message + "\n"+textarea.value;
+    }
+    
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+    
+    console.log = function (...args) {
+        originalLog.apply(console, args);
+        writeToTextarea("[LOG] " + args.join(" "));
+    };
+    
+    console.warn = function (...args) {
+        originalWarn.apply(console, args);
+        writeToTextarea("[WARN] " + args.join(" "));
+    };
+    
+    console.error = function (...args) {
+        originalError.apply(console, args);
+        writeToTextarea("[ERROR] " + args.join(" "));
+    };
 }
