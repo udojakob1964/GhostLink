@@ -44,6 +44,7 @@ async function connectPuckJS() {
 
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
+                
                 recognition.start();
                 //new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
                 // seems no to be necessary because on android the microphone is activated by the browser and beeps...
@@ -121,6 +122,12 @@ async function connectPuckJS() {
                 }
             });
         }).catch(error => console.error('Fehler beim Abrufen der Audiogeräte:', error));
+
+        const stream = await selectMicrophone();
+        if (!stream) {
+            console.error('Kein Mikrofon-Stream verfügbar.');
+            return;
+        }
 
     } catch (error) {
         console.error("❌ Fehler:", error);
@@ -282,4 +289,36 @@ function redirectConsoleToTextarea(textareaId) {
         originalError.apply(console, args);
         writeToTextarea("[ERROR] " + args.join(" "));
     };
+}
+
+
+async function selectMicrophone() {
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputDevices = devices.filter(device => device.kind === 'audioinput');
+
+        if (audioInputDevices.length === 0) {
+            console.error('Keine Audiogeräte gefunden.');
+            return;
+        }
+
+        // Beispiel: Wähle das erste verfügbare Mikrofon
+        //const selectedDeviceId = audioInputDevices[0].deviceId;
+        const selectedDeviceId = audioInputDevices[audioInputDevices.length-1].deviceId; //take the last one
+
+        // Optional: Benutzer zur Auswahl eines Mikrofons auffordern
+        //const selectedDeviceId = prompt("Bitte wählen Sie ein Mikrofon:", audioInputDevices.map(device => device.label).join('\n'));
+        //const selectedDeviceId = prompt("Bitte wählen Sie ein Mikrofon:", audioInputDevices.map(device => device.label+'\n').join('\n'));
+        
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                deviceId: selectedDeviceId
+            }
+        });
+
+        console.log(`Verwendetes Mikrofon: ${audioInputDevices[0].label}`);
+        return stream;
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Audiogeräte:', error);
+    }
 }
