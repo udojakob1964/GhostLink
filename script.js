@@ -302,9 +302,16 @@ async function selectMicrophone() {
             return;
         }
 
+        let inputString= prompt("Please choose the index of the microphone to use:");
+        let index= parseInt(inputString);
+        if (index>=audioInputDevices.length) {
+            console.error('Index out of range.');
+            return;
+        }
+
         // Beispiel: Wähle das erste verfügbare Mikrofon
         //const selectedDeviceId = audioInputDevices[0].deviceId;
-        const selectedDeviceId = audioInputDevices[0].deviceId; 
+        const selectedDeviceId = audioInputDevices[index].deviceId; 
 
         // Optional: Benutzer zur Auswahl eines Mikrofons auffordern
         //const selectedDeviceId = prompt("Bitte wählen Sie ein Mikrofon:", audioInputDevices.map(device => device.label).join('\n'));
@@ -316,7 +323,7 @@ async function selectMicrophone() {
             }
         });
 
-        console.log(`Verwendetes Mikrofon: ${audioInputDevices[0].label}`);
+        console.log(`Verwendetes Mikrofon: ${audioInputDevices[index].label}`);
         return stream;
     } catch (error) {
         console.error('Fehler beim Abrufen der Audiogeräte:', error);
