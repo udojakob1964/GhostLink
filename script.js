@@ -42,29 +42,10 @@ async function connectPuckJS() {
                 //navigator.vibrate(100);
                 //new Audio("Button-down.mp3").play(); 
 
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const input = audioContext.createMediaStreamSource(stream);
-                const processor = audioContext.createScriptProcessor(2048, 1, 1);
-            
-                input.connect(processor);
-                processor.connect(audioContext.destination);
             
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
-            
-                processor.onaudioprocess = (event) => {
-                    const inputBuffer = event.inputBuffer;
-                    const outputBuffer = event.outputBuffer;
-            
-                    for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
-                        const inputData = inputBuffer.getChannelData(channel);
-                        const outputData = outputBuffer.getChannelData(channel);
-            
-                        for (let sample = 0; sample < inputBuffer.length; sample++) {
-                            outputData[sample] = inputData[sample];
-                        }
-                    }
-                };
+                recognition.stream= stream;
                 
                 recognition.start();
                 //new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
@@ -79,6 +60,7 @@ async function connectPuckJS() {
                     //const chatGPTResponse = "Bald wird das hier funktionieren!";
                     document.getElementById('status').textContent = `TextToSpeech: ${chatGPTResponse}`;
                     speak(chatGPTResponse);
+                    recognition.stop();
                 };
 
                 recognition.onerror = (event) => {
@@ -161,6 +143,7 @@ async function connectPuckJS() {
 // 🔘 Verbindung mit Button starten
 document.querySelector("#connectBluetoothDevice").addEventListener("click", connectPuckJS);
 document.querySelector("#setApiKey").addEventListener("click", setApiKey);
+document.querySelector("#setAudioInputIndex").addEventListener("click", setAudioInputIndex);
 document.addEventListener("DOMContentLoaded", function() {
     redirectConsoleToTextarea("textareaId");
 });
@@ -278,6 +261,13 @@ function setApiKey() {
     }
 }
 
+function setAudioInputIndex() {
+    const key = prompt("Please enter AudioInputIndex:", localStorage.getItem('audio_input_index'));
+    if (key) {
+        localStorage.setItem('audio_input_index', key);
+        alert('AudioInputIndex gespeichert!');
+    }
+}
 
 function redirectConsoleToTextarea(textareaId) {
     const textarea = document.getElementById(textareaId);
@@ -312,7 +302,6 @@ function redirectConsoleToTextarea(textareaId) {
     };
 }
 
-
 async function selectMicrophone() {
     try {
         const devices = await navigator.mediaDevices.enumerateDevices();
@@ -323,10 +312,11 @@ async function selectMicrophone() {
             return;
         }
 
-        let inputString= prompt("Please choose the index of the microphone to use:");
-        let index= parseInt(inputString);
+        //let inputString= prompt("Please choose the index of the microphone to use:");
+        const audioInputIndex = localStorage.getItem('audio_input_index'); 
+        let index= parseInt(audioInputIndex);
         if (index>=audioInputDevices.length) {
-            console.error('Index out of range.');
+            console.error('Index of audio input device out of range.');
             return;
         }
 
