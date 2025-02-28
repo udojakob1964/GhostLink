@@ -42,8 +42,29 @@ async function connectPuckJS() {
                 //navigator.vibrate(100);
                 //new Audio("Button-down.mp3").play(); 
 
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const input = audioContext.createMediaStreamSource(stream);
+                const processor = audioContext.createScriptProcessor(2048, 1, 1);
+            
+                input.connect(processor);
+                processor.connect(audioContext.destination);
+            
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
+            
+                processor.onaudioprocess = (event) => {
+                    const inputBuffer = event.inputBuffer;
+                    const outputBuffer = event.outputBuffer;
+            
+                    for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+                        const inputData = inputBuffer.getChannelData(channel);
+                        const outputData = outputBuffer.getChannelData(channel);
+            
+                        for (let sample = 0; sample < inputBuffer.length; sample++) {
+                            outputData[sample] = inputData[sample];
+                        }
+                    }
+                };
                 
                 recognition.start();
                 //new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
@@ -304,7 +325,7 @@ async function selectMicrophone() {
 
         // Beispiel: Wähle das erste verfügbare Mikrofon
         //const selectedDeviceId = audioInputDevices[0].deviceId;
-        const selectedDeviceId = audioInputDevices[0].deviceId; 
+        const selectedDeviceId = audioInputDevices[1].deviceId; 
 
         // Optional: Benutzer zur Auswahl eines Mikrofons auffordern
         //const selectedDeviceId = prompt("Bitte wählen Sie ein Mikrofon:", audioInputDevices.map(device => device.label).join('\n'));
@@ -316,7 +337,7 @@ async function selectMicrophone() {
             }
         });
 
-        console.log(`Verwendetes Mikrofon: ${audioInputDevices[0].label}`);
+        console.log(`Verwendetes Mikrofon: ${audioInputDevices[1].label}`);
         return stream;
     } catch (error) {
         console.error('Fehler beim Abrufen der Audiogeräte:', error);
