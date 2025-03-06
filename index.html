@@ -23,7 +23,7 @@
 <body>
 
   <div class="container-fluid p-5 bg-primary text-white text-center">
-    <h1><i class="bi bi-chat-dots-fill"></i> GhostLink V 1.0.6</h1>
+    <h1><i class="bi bi-chat-dots-fill"></i> GhostLink V 1.0.7</h1>
     <p>Your hidden link to the worlds knowledge.</p>
   </div>
 
@@ -69,6 +69,9 @@
           <p>Please enter index of audio input device to use for speech recognition:</p>
           <button id="setAudioInputIndex">Enter audio input index</button>
           <p></p>
+          <p>Please install your testcode here...:</p>
+          <button id="executeTest">execute test</button>
+          <p></p>
          <strong>TODO:</strong> Within this section you will be able to choose and modify a certain promt that will be set in front of your 
           transcribed voice input. This will help to specify the context of your requests and questions to ChatGPT. Use it e.g. to get precise short answers or fun facts around a certain topic etc.
         </div>
@@ -87,7 +90,7 @@
           <p id="status">🔴 Not connected!</p>
         </div>
           <textarea id="textareaId" class="form-control" rows="13" readonly></textarea> 
-        
+          <canvas id="audioCanvas" class="form-control" rows="10" ></textarea> 
       </div>
     </div>
   </div>
