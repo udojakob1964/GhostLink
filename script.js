@@ -45,7 +45,7 @@ async function connectPuckJS() {
             
                 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
                 recognition.lang = 'de-DE';
-                recognition.stream= stream;
+                //recognition.stream= stream;
                 
                 recognition.start();
                 //new Audio("Button-down.mp3").play();  // to be informed that the recognition is starting
@@ -117,6 +117,9 @@ async function connectPuckJS() {
         // Alles hat geklappt => Haken setzen an ScanButton:
         //document.getElementById("connectBluetoothDevice").innerHTML += ' <i class="bi bi-check2-circle"></i>';
         //document.getElementById("connectBluetoothDevice").style.backgroundColor= "lightgreen";
+
+        return;
+
 
         navigator.mediaDevices.enumerateDevices().then(devices => {
             devices.forEach(device => {
