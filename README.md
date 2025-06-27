@@ -36,7 +36,8 @@ https://www.bluetooth.com/specifications/assigned-numbers/<p>
 https://pictogrammers.com/library/mdi/<p>
 https://web.dev/learn?hl=de
 
-
+Um auf die gehostete Version dieser App zugreifen zu können muss man die unter github pages zu findende Seite aufrufen (über den Browser des Gerätes, das man benutzen will)...:
+udojakob1964.github.io/GhostLink/index.html
 
 
 Vorbereitungen:
